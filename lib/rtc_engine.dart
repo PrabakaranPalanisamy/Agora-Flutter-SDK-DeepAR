@@ -1,5 +1,6 @@
 library agora_rtc_engine;
 
+export 'src/camera_deep_ar.dart';
 export 'src/classes.dart';
 export 'src/enums.dart';
 export 'src/events.dart' hide RtcChannelEventHandler;

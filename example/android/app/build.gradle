@@ -45,7 +45,7 @@ android {
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId "io.agora.agora_rtc_engine_example"
-        minSdkVersion 16
+        minSdkVersion 21
         targetSdkVersion 31
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
@@ -67,12 +67,23 @@ flutter {
 }
 
 dependencies {
-    androidTestImplementation 'androidx.test:runner:1.2.0'
+    implementation 'androidx.camera:camera-lifecycle:1.0.2'
+  androidTestImplementation 'androidx.test:runner:1.2.0'
     androidTestImplementation 'androidx.test:rules:1.2.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+  implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
 
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-
+  implementation project(':deepar')
+  implementation 'com.karumi:dexter:6.2.1'
     testImplementation 'junit:junit:4.13.2'
     testImplementation 'org.mockito:mockito-core:3.3.3'
+  //videocalls
+  def camerax_version = "1.1.0-alpha08"
+  implementation "androidx.camera:camera-core:${camerax_version}"
+  implementation "androidx.camera:camera-camera2:$camerax_version"
+  implementation "androidx.camera:camera-lifecycle:$camerax_version"
+  implementation "androidx.camera:camera-view:1.0.0-alpha28"
+  implementation "androidx.camera:camera-extensions:1.0.0-alpha28"
+  implementation 'com.google.guava:guava:29.0-android'
+
 }

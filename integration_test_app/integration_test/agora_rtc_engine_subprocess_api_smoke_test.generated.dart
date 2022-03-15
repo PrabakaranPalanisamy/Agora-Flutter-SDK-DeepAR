@@ -2243,7 +2243,7 @@ void rtcEngineSubProcessSmokeTestCases() {
 
       const CameraCaptureOutputPreference configPreference =
           CameraCaptureOutputPreference.Auto;
-      const CameraDirection configCameraDirection = CameraDirection.Rear;
+      const CameraDirectionn configCameraDirection = CameraDirectionn.Rear;
       const int configCaptureWidth = 10;
       const int configCaptureHeight = 10;
       final CameraCapturerConfiguration config = CameraCapturerConfiguration(

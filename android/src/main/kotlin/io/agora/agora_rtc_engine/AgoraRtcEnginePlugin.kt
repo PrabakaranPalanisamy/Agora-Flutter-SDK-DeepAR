@@ -12,7 +12,12 @@ import io.agora.rtc.RtcEngine
 import io.agora.rtc.base.RtcEngineRegistry
 import io.flutter.BuildConfig
 import io.flutter.embedding.engine.plugins.FlutterPlugin
-import io.flutter.plugin.common.*
+import io.flutter.embedding.engine.plugins.activity.ActivityAware
+import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
+import io.flutter.plugin.common.BinaryMessenger
+import io.flutter.plugin.common.EventChannel
+import io.flutter.plugin.common.MethodCall
+import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
 import io.flutter.plugin.common.PluginRegistry.Registrar
@@ -112,7 +117,8 @@ open class CallApiMethodCallHandler(
 }
 
 /** AgoraRtcEnginePlugin */
-class AgoraRtcEnginePlugin : FlutterPlugin, MethodCallHandler, EventChannel.StreamHandler {
+class AgoraRtcEnginePlugin : FlutterPlugin, MethodCallHandler, EventChannel.StreamHandler ,
+  ActivityAware{
   private var registrar: Registrar? = null
   private var binding: FlutterPlugin.FlutterPluginBinding? = null
   private lateinit var applicationContext: Context
@@ -131,7 +137,7 @@ class AgoraRtcEnginePlugin : FlutterPlugin, MethodCallHandler, EventChannel.Stre
   private val handler = Handler(Looper.getMainLooper())
   private lateinit var rtcChannelPlugin: AgoraRtcChannelPlugin;// = AgoraRtcChannelPlugin(irisRtcEngine)
   private lateinit var callApiMethodCallHandler: CallApiMethodCallHandler
-
+  private lateinit var cameraDeepArPlugin: CameraDeepArPlugin
   // This static function is optional and equivalent to onAttachedToEngine. It supports the old
   // pre-Flutter-1.12 Android projects. You are encouraged to continue supporting
   // plugin registration via this function while apps migrate to use the new Android APIs
@@ -157,6 +163,7 @@ class AgoraRtcEnginePlugin : FlutterPlugin, MethodCallHandler, EventChannel.Stre
     binaryMessenger: BinaryMessenger,
     platformViewRegistry: PlatformViewRegistry
   ) {
+
     applicationContext = context.applicationContext
     irisRtcEngine = IrisRtcEngine(applicationContext)
     methodChannel = MethodChannel(binaryMessenger, "agora_rtc_engine")
@@ -177,6 +184,8 @@ class AgoraRtcEnginePlugin : FlutterPlugin, MethodCallHandler, EventChannel.Stre
 
     rtcChannelPlugin = AgoraRtcChannelPlugin(irisRtcEngine)
     rtcChannelPlugin.initPlugin(binaryMessenger)
+
+
   }
 
   override fun onAttachedToEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {
@@ -251,5 +260,25 @@ class AgoraRtcEnginePlugin : FlutterPlugin, MethodCallHandler, EventChannel.Stre
       return@getAssetAbsolutePath
     }
     result.error(IllegalArgumentException::class.simpleName, null, null)
+  }
+
+  override fun onAttachedToActivity(binding: ActivityPluginBinding) {
+    //registrar.activity().getApplication().registerActivityLifecycleCallbacks(plugin);
+    println("deepar onattched to activity")
+    val factory = CameraDeepArViewFactory(binding.activity, this.binding!!.binaryMessenger)
+
+    this.binding!!.platformViewRegistry.registerViewFactory("deep_ar_camera", factory)
+  }
+
+  override fun onDetachedFromActivityForConfigChanges() {
+    TODO("Not yet implemented")
+  }
+
+  override fun onReattachedToActivityForConfigChanges(binding: ActivityPluginBinding) {
+    TODO("Not yet implemented")
+  }
+
+  override fun onDetachedFromActivity() {
+    TODO("Not yet implemented")
   }
 }

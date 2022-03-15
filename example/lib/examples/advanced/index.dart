@@ -13,6 +13,9 @@ import 'package:agora_rtc_engine_example/examples/advanced/stream_message/stream
 import 'package:agora_rtc_engine_example/examples/advanced/voice_changer/voice_changer.dart';
 import 'package:flutter/foundation.dart';
 
+import 'custom_capture_video/camera_ar.dart';
+import 'custom_capture_video/join_channel_video.dart';
+
 /// Data source for advanced examples
 final Advanced = [
   {'name': 'Advanced'},
@@ -20,6 +23,8 @@ final Advanced = [
   {'name': 'ChannelMediaRelay', 'widget': ChannelMediaRelay()},
   if (!kIsWeb && (Platform.isAndroid || Platform.isIOS))
     {'name': 'CustomCaptureAudio', 'widget': CustomCaptureAudio()},
+  if (!kIsWeb && (Platform.isAndroid || Platform.isIOS))
+    {'name': 'JoinChannelCustomVideo', 'widget': CameraAR()},
   if (kIsWeb || !(Platform.isAndroid || Platform.isIOS))
     {'name': 'DeviceManager', 'widget': DeviceManager()},
   {'name': 'JoinMultipleChannel', 'widget': JoinMultipleChannel()},

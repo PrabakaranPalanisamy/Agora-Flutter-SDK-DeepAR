@@ -37,12 +37,13 @@ class _State extends State<JoinChannelVideo> {
 
   _initEngine() async {
     _engine = await RtcEngine.createWithContext(RtcEngineContext(config.appId));
-    this._addListeners();
-
-    await _engine.enableVideo();
-    await _engine.startPreview();
-    await _engine.setChannelProfile(ChannelProfile.LiveBroadcasting);
-    await _engine.setClientRole(ClientRole.Broadcaster);
+    // this._addListeners();
+    //
+    // await _engine.enableVideo();
+    // await _engine.startPreview();
+    // await _engine.setChannelProfile(ChannelProfile.LiveBroadcasting);
+    // await _engine.setClientRole(ClientRole.Broadcaster);
+    _joinChannel();
   }
 
   _addListeners() {
