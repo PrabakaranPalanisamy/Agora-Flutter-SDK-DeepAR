@@ -137,7 +137,7 @@ class AgoraRtcEnginePlugin : FlutterPlugin, MethodCallHandler, EventChannel.Stre
   private val handler = Handler(Looper.getMainLooper())
   private lateinit var rtcChannelPlugin: AgoraRtcChannelPlugin;// = AgoraRtcChannelPlugin(irisRtcEngine)
   private lateinit var callApiMethodCallHandler: CallApiMethodCallHandler
-  private lateinit var cameraDeepArPlugin: CameraDeepArPlugin
+//  private lateinit var cameraDeepArPlugin: CameraDeepArPlugin
   // This static function is optional and equivalent to onAttachedToEngine. It supports the old
   // pre-Flutter-1.12 Android projects. You are encouraged to continue supporting
   // plugin registration via this function while apps migrate to use the new Android APIs
@@ -265,9 +265,9 @@ class AgoraRtcEnginePlugin : FlutterPlugin, MethodCallHandler, EventChannel.Stre
   override fun onAttachedToActivity(binding: ActivityPluginBinding) {
     //registrar.activity().getApplication().registerActivityLifecycleCallbacks(plugin);
     println("deepar onattched to activity")
-    val factory = CameraDeepArViewFactory(binding.activity, this.binding!!.binaryMessenger)
-
-    this.binding!!.platformViewRegistry.registerViewFactory("deep_ar_camera", factory)
+//    val factory = CameraDeepArViewFactory(binding.activity, this.binding!!.binaryMessenger)
+//
+//    this.binding!!.platformViewRegistry.registerViewFactory("deep_ar_camera", factory)
   }
 
   override fun onDetachedFromActivityForConfigChanges() {

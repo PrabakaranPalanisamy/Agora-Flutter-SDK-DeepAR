@@ -1,9 +1,11 @@
 import 'package:agora_rtc_engine/rtc_engine.dart';
+import 'package:agora_rtc_engine_example/examples/advanced/custom_capture_video/camera_deep_ar.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 import '../../log_sink.dart';
+
 
 
 
@@ -39,8 +41,9 @@ class _CameraARState extends State<CameraAR> {
   _initEngine() async {
     _engine = await RtcEngine.createWithContext(RtcEngineContext("79daa6d2970d4978a08c21915fbfc1d9"));
     this._addListeners();
-       await _engine.enableVideo();
-    await _engine.startPreview();
+
+    await _engine.enableVideo();
+    // await _engine.startPreview();
     await _engine.setChannelProfile(ChannelProfile.LiveBroadcasting);
     await _engine.setClientRole(ClientRole.Broadcaster);
     _joinChannel();
@@ -85,7 +88,7 @@ class _CameraARState extends State<CameraAR> {
     if (defaultTargetPlatform == TargetPlatform.android) {
       await [Permission.microphone, Permission.camera].request();
     }
-    await _engine.joinChannel("00679daa6d2970d4978a08c21915fbfc1d9IACeegByowUW/ab/75JiEuI9CppbhQQECPmP2JeJPYypagx+f9gAAAAAEADjTvSOB/IxYgEAAQAH8jFi", "test", null,0);
+    await _engine.joinChannel("00679daa6d2970d4978a08c21915fbfc1d9IACeQECeARppKmELt4J+GSAF03ahI4XcEE+F+7TQnvM0pgx+f9gAAAAAEADjTvSOvQozYgEAAQC9CjNi", "test", null,0);
   }
 
   _leaveChannel() async {

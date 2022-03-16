@@ -1,4 +1,4 @@
-package io.agora.agora_rtc_engine;
+package io.agora.agora_rtc_engine_example.deepar_video;
 
 import android.Manifest;
 import android.app.Activity;
@@ -28,7 +28,6 @@ import androidx.camera.core.ImageProxy;
 import androidx.camera.lifecycle.ProcessCameraProvider;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleOwner;
 
 import com.google.common.util.concurrent.ListenableFuture;
@@ -48,8 +47,10 @@ import ai.deepar.ar.AREventListener;
 import ai.deepar.ar.CameraResolutionPreset;
 import ai.deepar.ar.DeepAR;
 import ai.deepar.ar.DeepARImageFormat;
+import io.agora.agora_rtc_engine_example.R;
 import io.agora.rtc.RtcEngine;
 import io.agora.rtc.base.RtcEnginePlugin;
+import io.agora.rtc.video.VideoEncoderConfiguration;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
@@ -111,16 +112,17 @@ public class CameraDeepArView implements PlatformView, RtcEnginePlugin,
   private File videoFile;
 
 
-  public CameraDeepArView(Activity mActivity, BinaryMessenger mBinaryMessenger, Context mContext, int id, Object args) {
+  public CameraDeepArView(Activity mActivity, BinaryMessenger mBinaryMessenger,RtcEngine rtcEngine, Context mContext, int id, Object args) {
     System.out.println("deepar view created");
     this.activity = mActivity;
     this.context = mContext;
+    this.mRtcEngine=rtcEngine;
     //view = View.inflate(context,R.layout.activity_camera, null);
     view = activity.getLayoutInflater().inflate(R.layout.activity_main, null);
     methodChannel =
       new MethodChannel(mBinaryMessenger, "deep_ar_camera/" + id);
 
-    imgSurface = view.findViewById(R.id.localPreview);
+    imgSurface = view.findViewById(io.agora.agora_rtc_engine.R.id.localPreview);
     imgSurface.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
@@ -169,13 +171,14 @@ public class CameraDeepArView implements PlatformView, RtcEnginePlugin,
         1);
     } else {
       // Permission has already been granted
-//      initializeDeepAR();
+      initializeDeepAR();
       setupCamera();
     }
   }
 
   private void initializeDeepAR() {
     System.out.println("deepar initialize deepar");
+    setupVideoConfig();
     deepAR = new DeepAR(activity);
     deepAR.setLicenseKey(androidLicenceKey);
     deepAR.initialize(activity, this);
@@ -184,7 +187,23 @@ public class CameraDeepArView implements PlatformView, RtcEnginePlugin,
     renderer.setCallInProgress(true);
     setupLocalFeed();
   }
+  private void setupVideoConfig() {
+    mRtcEngine.enableVideo();
 
+    mRtcEngine.setExternalVideoSource(true, true, true);
+
+    // Please go to this page for detailed explanation
+    // https://docs.agora.io/en/Video/API%20Reference/java/classio_1_1agora_1_1rtc_1_1_rtc_engine.html#af5f4de754e2c1f493096641c5c5c1d8f
+    mRtcEngine.setVideoEncoderConfiguration(new VideoEncoderConfiguration(
+      // Agora seems to work best with "Square" resolutions (Aspect Ratio 1:1)
+      // At least when used in combination with DeepAR
+      VideoEncoderConfiguration.VD_640x480,
+      VideoEncoderConfiguration.FRAME_RATE.FRAME_RATE_FPS_15,
+      VideoEncoderConfiguration.STANDARD_BITRATE,
+      VideoEncoderConfiguration.ORIENTATION_MODE.ORIENTATION_MODE_FIXED_PORTRAIT));
+
+
+  }
   private void setupLocalFeed() {
     //create a surfaceview
     surfaceView = new GLSurfaceView(activity);
@@ -505,6 +524,17 @@ public class CameraDeepArView implements PlatformView, RtcEnginePlugin,
     if (disposed) {
       return;
     }
+    if (cameraProviderFuture != null) {
+      ProcessCameraProvider cameraProvider = null;
+      try {
+        cameraProvider = cameraProviderFuture.get();
+        cameraProvider.unbindAll();
+      } catch (ExecutionException e) {
+        e.printStackTrace();
+      } catch (InterruptedException e) {
+        e.printStackTrace();
+      }
+    }
     disposed = true;
     methodChannel.setMethodCallHandler(null);
     deepAR.setAREventListener(null);
@@ -727,9 +757,9 @@ public class CameraDeepArView implements PlatformView, RtcEnginePlugin,
 
   @Override
   public void onRtcEngineCreated(@Nullable RtcEngine rtcEngine) {
-    System.out.println("deepar rtcengine created");
-    this.mRtcEngine = rtcEngine;
-    initializeDeepAR();
+//    System.out.println("deepar rtcengine created");
+//    this.mRtcEngine = rtcEngine;
+//    initializeDeepAR();
   }
 
   @Override
