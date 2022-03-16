@@ -36,6 +36,7 @@ public class CameraDeepArPlugin implements FlutterPlugin, ActivityAware, RtcEngi
   private FlutterPluginBinding pluginBinding;
   private BinaryMessenger binaryMessenger;
   private FlutterEngine flutterEngine;
+  private RtcEngine rtcEngine;
 
 
   public CameraDeepArPlugin(Activity registrar) {
@@ -65,7 +66,15 @@ public class CameraDeepArPlugin implements FlutterPlugin, ActivityAware, RtcEngi
 //        lifecycle = FlutterLifecycleAdapter.getActivityLifecycle(binding);
 //        lifecycle.addObserver(this);
 //    final CameraDeepArViewFactory factory = new CameraDeepArViewFactory(binding.getActivity(),pluginBinding.getBinaryMessenger());
-//
+    System.out.println("deepar rtcengine onAttachedToActivity plugin registerd");
+
+    if(this.rtcEngine!=null) {
+      final CameraDeepArViewFactory factory = new CameraDeepArViewFactory(this.activity, binaryMessenger, this.rtcEngine);
+      flutterEngine
+        .getPlatformViewsController()
+        .getRegistry()
+        .registerViewFactory("deep_ar_camera", factory);
+    }
 //    pluginBinding
 //      .getPlatformViewRegistry()
 //      .registerViewFactory(
@@ -109,7 +118,7 @@ public class CameraDeepArPlugin implements FlutterPlugin, ActivityAware, RtcEngi
 
   @Override
   public void onAttachedToEngine(@NonNull FlutterPluginBinding binding) {
-//    System.out.println("deepar attched to enging");
+    System.out.println("deepar attched to enging");
 //    pluginBinding = binding;
 //    final CameraDeepArViewFactory factory = new CameraDeepArViewFactory(activity,binaryMessenger);
 //
@@ -127,8 +136,8 @@ public class CameraDeepArPlugin implements FlutterPlugin, ActivityAware, RtcEngi
 
   @Override
   public void onRtcEngineCreated(@Nullable RtcEngine rtcEngine) {
-System.out.println("deepar rtcengine created");
-//this.rtcEngine=rtcEngine;
+System.out.println("deepar rtcengine created plugin registerd");
+this.rtcEngine=rtcEngine;
     final CameraDeepArViewFactory factory = new CameraDeepArViewFactory(this.activity,binaryMessenger,rtcEngine);
     flutterEngine
       .getPlatformViewsController()

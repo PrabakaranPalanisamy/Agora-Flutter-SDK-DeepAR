@@ -1,35 +1,35 @@
-package io.agora.agora_rtc_engine_example.deepar_video
-
-import ai.deepar.ar.*
-import android.app.Activity
-import android.content.pm.ActivityInfo
-import android.graphics.Bitmap
-import android.media.Image
-import android.opengl.GLSurfaceView
-import android.util.DisplayMetrics
-import android.util.Log
-import android.util.Size
-import android.view.Surface
-import android.widget.FrameLayout
-import androidx.camera.core.CameraSelector
-import androidx.camera.core.ImageAnalysis
-import androidx.camera.lifecycle.ProcessCameraProvider
-import androidx.core.content.ContextCompat
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleOwner
-import io.agora.agora_rtc_engine_example.R
-import io.agora.rtc.RtcEngine
-import io.agora.rtc.base.RtcEnginePlugin
-import io.agora.rtc.video.VideoEncoderConfiguration
-import java.lang.ref.WeakReference
-import java.nio.ByteBuffer
-import java.nio.ByteOrder
-import java.util.concurrent.ExecutionException
-
+//package io.agora.agora_rtc_engine_example.deepar_video
+//
+//import ai.deepar.ar.*
+//import android.app.Activity
+//import android.content.pm.ActivityInfo
+//import android.graphics.Bitmap
+//import android.media.Image
+//import android.opengl.GLSurfaceView
+//import android.util.DisplayMetrics
+//import android.util.Log
+//import android.util.Size
+//import android.view.Surface
+//import android.widget.FrameLayout
+//import androidx.camera.core.CameraSelector
+//import androidx.camera.core.ImageAnalysis
+//import androidx.camera.lifecycle.ProcessCameraProvider
+//import androidx.core.content.ContextCompat
+//import androidx.lifecycle.Lifecycle
+//import androidx.lifecycle.LifecycleOwner
+//import io.agora.agora_rtc_engine_example.R
+//import io.agora.rtc.RtcEngine
+//import io.agora.rtc.base.RtcEnginePlugin
+//import io.agora.rtc.video.VideoEncoderConfiguration
+//import java.lang.ref.WeakReference
+//import java.nio.ByteBuffer
+//import java.nio.ByteOrder
+//import java.util.concurrent.ExecutionException
+//
 //class CustomCaptureVideoPlugin(private val activity: WeakReference<Activity>,private val lifecycleOwner: Lifecycle) :
 //  RtcEnginePlugin,
 //  CustomCaptureVideo.CustomCaptureVideoApi, AREventListener,LifecycleOwner {
-
+//
 //  private var rtcEngine: RtcEngine? = null
 //  private var deepAR: DeepAR? = null
 //  private var surfaceView: GLSurfaceView? = null
@@ -45,18 +45,18 @@ import java.util.concurrent.ExecutionException
 //  private val NUMBER_OF_BUFFERS = 2
 //
 //  override fun onRtcEngineCreated(rtcEngine: RtcEngine?) {
-////    this.rtcEngine = rtcEngine
-////    setupCamera()
-////    activity.get()!!.setContentView(R.layout.activity_main)
-////    local = activity.get()!!.findViewById<FrameLayout>(R.id.localPreview)
-////    deepAR = DeepAR(activity.get()!!.baseContext)
-////    deepAR!!.setLicenseKey("0a4db3a09c7942c67ae00ebf43cbf715683fdc937361215f0e9dbd7f1a39bb1903e7449453a16e0f")
-////    deepAR!!.initialize(activity.get()!!.baseContext, this)
-////    setupVideoConfig()
-////    renderer = DeepARRenderer(deepAR, rtcEngine)
-////
-////    renderer!!.isCallInProgress=true;
-////    setupLocalFeed()
+//    this.rtcEngine = rtcEngine
+//    setupCamera()
+//    activity.get()!!.setContentView(R.layout.activity_main)
+//    local = activity.get()!!.findViewById<FrameLayout>(R.id.localPreview)
+//    deepAR = DeepAR(activity.get()!!.baseContext)
+//    deepAR!!.setLicenseKey("0a4db3a09c7942c67ae00ebf43cbf715683fdc937361215f0e9dbd7f1a39bb1903e7449453a16e0f")
+//    deepAR!!.initialize(activity.get()!!.baseContext, this)
+//    setupVideoConfig()
+//    renderer = DeepARRenderer(deepAR, rtcEngine)
+//
+//    renderer!!.isCallInProgress=true;
+//    setupLocalFeed()
 //  }
 //  private fun getFilterPath(filterName: String): String? {
 //    return if (filterName == "none") {
@@ -109,13 +109,13 @@ import java.util.concurrent.ExecutionException
 //    local!!.addView(surfaceView)
 //  }
 //
-//  override fun setExternalVideoSource(
-//    enabled: Boolean?,
-//    useTexture: Boolean?,
-//    pushMmode: Boolean?
-//  ) {
-//    rtcEngine?.setExternalVideoSource(enabled!!,useTexture!!,pushMmode!!);
-//  }
+////  override fun setExternalVideoSource(
+////    enabled: Boolean?,
+////    useTexture: Boolean?,
+////    pushMmode: Boolean?
+////  ) {
+////    rtcEngine?.setExternalVideoSource(enabled!!,useTexture!!,pushMmode!!);
+////  }
 //
 //  private fun setupCamera() {
 //    cameraProviderFuture = ProcessCameraProvider.getInstance(activity.get()!!.baseContext)
@@ -252,13 +252,13 @@ import java.util.concurrent.ExecutionException
 //    return orientation
 //  }
 //
-//  override fun startRenderer() {
-//    renderer!!.isCallInProgress = true
-//  }
-//
-//  override fun stoRenderer() {
-//    renderer!!.isCallInProgress = false
-//  }
+////  override fun startRenderer() {
+////    renderer!!.isCallInProgress = true
+////  }
+////
+////  override fun stoRenderer() {
+////    renderer!!.isCallInProgress = false
+////  }
 //
 //  override fun screenshotTaken(p0: Bitmap?) {
 //
@@ -286,7 +286,7 @@ import java.util.concurrent.ExecutionException
 //
 //  override fun initialized() {
 //    deepAR!!.switchEffect("mask", getFilterPath("alien"))
-//    startRenderer()
+////    startRenderer()
 //  }
 //
 //  override fun faceVisibilityChanged(p0: Boolean) {

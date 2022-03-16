@@ -104,7 +104,7 @@ class CameraDeepAr extends StatefulWidget {
   _CameraDeepArState createState() => _CameraDeepArState();
 }
 
-class _CameraDeepArState extends State<CameraDeepAr> {
+class _CameraDeepArState extends State<CameraDeepAr>  with AutomaticKeepAliveClientMixin{
   late CameraDeepArController _controller;
   bool hasPermission = false;
   List<Effects> get supportedEffects => widget.supportedEffects;
@@ -178,6 +178,10 @@ class _CameraDeepArState extends State<CameraDeepAr> {
   void onCameraReady(bool ready) {
     widget.onCameraReady(ready);
   }
+
+  @override
+  // TODO: implement wantKeepAlive
+  bool get wantKeepAlive => true;
 }
 
 class DeepCameraArPermissions {

@@ -265,9 +265,6 @@ class AgoraRtcEnginePlugin : FlutterPlugin, MethodCallHandler, EventChannel.Stre
   override fun onAttachedToActivity(binding: ActivityPluginBinding) {
     //registrar.activity().getApplication().registerActivityLifecycleCallbacks(plugin);
     println("deepar onattched to activity")
-//    val factory = CameraDeepArViewFactory(binding.activity, this.binding!!.binaryMessenger)
-//
-//    this.binding!!.platformViewRegistry.registerViewFactory("deep_ar_camera", factory)
   }
 
   override fun onDetachedFromActivityForConfigChanges() {

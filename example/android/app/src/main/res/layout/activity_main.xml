@@ -3,8 +3,12 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-  <FrameLayout
+  <SurfaceView
     android:id="@+id/localPreview"
+    android:layout_width="150dp"
+    android:layout_height="150dp" />
+  <FrameLayout
+    android:id="@+id/localPreviewlayout"
     android:layout_width="150dp"
     android:layout_height="150dp" />
 </LinearLayout>

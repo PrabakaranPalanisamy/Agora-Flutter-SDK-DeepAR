@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.hardware.Camera;
 import android.media.Image;
 import android.media.MediaScannerConnection;
 import android.opengl.GLSurfaceView;
@@ -17,6 +16,7 @@ import android.util.Size;
 import android.view.MotionEvent;
 import android.view.Surface;
 import android.view.SurfaceHolder;
+import android.view.SurfaceView;
 import android.view.View;
 import android.widget.FrameLayout;
 
@@ -36,7 +36,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -68,7 +67,7 @@ public class CameraDeepArView implements PlatformView, RtcEnginePlugin,
   private final MethodChannel methodChannel;
   private boolean disposed = false;
   private float mDist;
-  private FrameLayout imgSurface;
+  private SurfaceView imgSurface;
   private String androidLicenceKey;
   private int defaultLensFacing = CameraSelector.LENS_FACING_FRONT;
   private int lensFacing = defaultLensFacing;
@@ -79,6 +78,7 @@ public class CameraDeepArView implements PlatformView, RtcEnginePlugin,
 
   private DeepAR deepAR;
   private GLSurfaceView surfaceView;
+  private FrameLayout localPreviewlayout;
   private DeepARRenderer renderer;
   private RtcEngine mRtcEngine;
 
@@ -94,35 +94,37 @@ public class CameraDeepArView implements PlatformView, RtcEnginePlugin,
 //
 //    }
 
-  private int defaultCameraDevice = Camera.CameraInfo.CAMERA_FACING_FRONT;
+//  private int defaultCameraDevice = Camera.CameraInfo.CAMERA_FACING_FRONT;
 
 
-  private int cameraDevice = defaultCameraDevice;
+  //  private int cameraDevice = defaultCameraDevice;
   private int currentMask = 0;
   private int currentEffect = 0;
   private int currentFilter = 0;
 
   private int screenOrientation;
 
-  ArrayList<String> masks;
-  ArrayList<String> effects;
-  ArrayList<String> filters;
+//  ArrayList<String> masks;
+//  ArrayList<String> effects;
+//  ArrayList<String> filters;
 
   private int activeFilterType = 0;
   private File videoFile;
 
 
-  public CameraDeepArView(Activity mActivity, BinaryMessenger mBinaryMessenger,RtcEngine rtcEngine, Context mContext, int id, Object args) {
+  public CameraDeepArView(Activity mActivity, BinaryMessenger mBinaryMessenger, RtcEngine rtcEngine, Context mContext, int id, Object args) {
     System.out.println("deepar view created");
     this.activity = mActivity;
     this.context = mContext;
-    this.mRtcEngine=rtcEngine;
+    this.mRtcEngine = rtcEngine;
     //view = View.inflate(context,R.layout.activity_camera, null);
     view = activity.getLayoutInflater().inflate(R.layout.activity_main, null);
     methodChannel =
       new MethodChannel(mBinaryMessenger, "deep_ar_camera/" + id);
 
-    imgSurface = view.findViewById(io.agora.agora_rtc_engine.R.id.localPreview);
+    imgSurface = view.findViewById(R.id.localPreview);
+    localPreviewlayout = view.findViewById(R.id.localPreviewlayout);
+
     imgSurface.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
@@ -130,12 +132,12 @@ public class CameraDeepArView implements PlatformView, RtcEnginePlugin,
       }
     });
 
-//        imgSurface.setFocusable(true);
-//        imgSurface.setFocusableInTouchMode(true);
-//        imgSurface.getHolder().addCallback(this);
-//        // Surface might already be initialized, so we force the call to onSurfaceChanged
-//        imgSurface.setVisibility(View.GONE);
-//        imgSurface.setVisibility(View.VISIBLE);
+    imgSurface.setFocusable(true);
+    imgSurface.setFocusableInTouchMode(true);
+    imgSurface.getHolder().addCallback(this);
+    // Surface might already be initialized, so we force the call to onSurfaceChanged
+    imgSurface.setVisibility(View.GONE);
+    imgSurface.setVisibility(View.VISIBLE);
 
     if (args instanceof HashMap) {
       @SuppressWarnings({"unchecked"})
@@ -148,8 +150,8 @@ public class CameraDeepArView implements PlatformView, RtcEnginePlugin,
       if (null != cameraEffect) activeFilterType = Integer.parseInt(String.valueOf(cameraEffect));
       if (null != direction) {
         int index = Integer.parseInt(String.valueOf(direction));
-        defaultCameraDevice = index == 0 ? Camera.CameraInfo.CAMERA_FACING_BACK : Camera.CameraInfo.CAMERA_FACING_FRONT;
-        cameraDevice = defaultCameraDevice;
+//        defaultCameraDevice = index == 0 ? Camera.CameraInfo.CAMERA_FACING_BACK : Camera.CameraInfo.CAMERA_FACING_FRONT;
+//        cameraDevice = defaultCameraDevice;
       }
            /* if(null!=cameraMode){
                 int index=Integer.parseInt(String.valueOf(direction));
@@ -172,7 +174,7 @@ public class CameraDeepArView implements PlatformView, RtcEnginePlugin,
     } else {
       // Permission has already been granted
       initializeDeepAR();
-      setupCamera();
+//      setupCamera();
     }
   }
 
@@ -182,11 +184,12 @@ public class CameraDeepArView implements PlatformView, RtcEnginePlugin,
     deepAR = new DeepAR(activity);
     deepAR.setLicenseKey(androidLicenceKey);
     deepAR.initialize(activity, this);
-    initializeFilters();
+//    initializeFilters();
     renderer = new DeepARRenderer(deepAR, mRtcEngine);
     renderer.setCallInProgress(true);
-    setupLocalFeed();
+//    setupLocalFeed();
   }
+
   private void setupVideoConfig() {
     mRtcEngine.enableVideo();
 
@@ -204,8 +207,10 @@ public class CameraDeepArView implements PlatformView, RtcEnginePlugin,
 
 
   }
+
   private void setupLocalFeed() {
     //create a surfaceview
+    System.out.println("deepar setting uplocalfeed");
     surfaceView = new GLSurfaceView(activity);
     surfaceView.setEGLContextClientVersion(2);
     surfaceView.setEGLConfigChooser(8, 8, 8, 8, 16, 0);
@@ -214,9 +219,9 @@ public class CameraDeepArView implements PlatformView, RtcEnginePlugin,
 
     surfaceView.setRenderer(renderer);
     surfaceView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
-
     // surfaceview is added to the local framelayout
-    imgSurface.addView(surfaceView);
+    imgSurface = (surfaceView);
+    localPreviewlayout.addView(surfaceView);
   }
 
   @Override
@@ -245,8 +250,8 @@ public class CameraDeepArView implements PlatformView, RtcEnginePlugin,
         Object direction = params.get("direction");
         if (null != direction) {
           int index = Integer.parseInt(String.valueOf(direction));
-          defaultCameraDevice = index == 0 ? Camera.CameraInfo.CAMERA_FACING_BACK : Camera.CameraInfo.CAMERA_FACING_FRONT;
-          cameraDevice = defaultCameraDevice;
+//          defaultCameraDevice = index == 0 ? Camera.CameraInfo.CAMERA_FACING_BACK : Camera.CameraInfo.CAMERA_FACING_FRONT;
+//          cameraDevice = defaultCameraDevice;
 //                    cameraGrabber.changeCameraDevice(cameraDevice);
         }
       }
@@ -269,7 +274,7 @@ public class CameraDeepArView implements PlatformView, RtcEnginePlugin,
         Map<String, Object> params = (Map<String, Object>) methodCall.arguments;
         Object mask = params.get("mask");
         currentMask = Integer.parseInt(String.valueOf(mask));
-        deepAR.switchEffect("mask", getFilterPath(masks.get(currentMask)));
+//        deepAR.switchEffect("mask", getFilterPath(masks.get(currentMask)));
       }
       result.success("Mask Changed");
     } else if ("changeEffect".equals(methodCall.method)) {
@@ -278,7 +283,7 @@ public class CameraDeepArView implements PlatformView, RtcEnginePlugin,
         Map<String, Object> params = (Map<String, Object>) methodCall.arguments;
         Object effect = params.get("effect");
         currentEffect = Integer.parseInt(String.valueOf(effect));
-        deepAR.switchEffect("effect", getFilterPath(effects.get(currentEffect)));
+//        deepAR.switchEffect("effect", getFilterPath(effects.get(currentEffect)));
       }
       result.success("Effect Changed");
     } else if ("changeFilter".equals(methodCall.method)) {
@@ -287,7 +292,7 @@ public class CameraDeepArView implements PlatformView, RtcEnginePlugin,
         Map<String, Object> params = (Map<String, Object>) methodCall.arguments;
         Object filter = params.get("filter");
         currentFilter = Integer.parseInt(String.valueOf(filter));
-        deepAR.switchEffect("filter", getFilterPath(filters.get(currentFilter)));
+//        deepAR.switchEffect("filter", getFilterPath(filters.get(currentFilter)));
       }
       result.success("Filter Changed");
     } else if ("startVideoRecording".equals(methodCall.method)) {
@@ -312,43 +317,43 @@ public class CameraDeepArView implements PlatformView, RtcEnginePlugin,
 
   }
 
-  private void initializeFilters() {
-    masks = new ArrayList<>();
-    masks.add("none");
-    masks.add("aviators");
-    masks.add("bigmouth");
-    masks.add("dalmatian");
-    masks.add("flowers");
-    masks.add("koala");
-    masks.add("lion");
-    masks.add("smallface");
-    masks.add("teddycigar");
-    masks.add("kanye");
-    masks.add("tripleface");
-    masks.add("sleepingmask");
-    masks.add("fatify");
-    masks.add("obama");
-    masks.add("mudmask");
-    masks.add("pug");
-    masks.add("slash");
-    masks.add("twistedface");
-    masks.add("grumpycat");
-
-    effects = new ArrayList<>();
-    effects.add("none");
-    effects.add("fire");
-    effects.add("rain");
-    effects.add("heart");
-    effects.add("blizzard");
-
-    filters = new ArrayList<>();
-    filters.add("none");
-    filters.add("filmcolorperfection");
-    filters.add("tv80");
-    filters.add("drawingmanga");
-    filters.add("sepia");
-    filters.add("bleachbypass");
-  }
+//  private void initializeFilters() {
+//    masks = new ArrayList<>();
+//    masks.add("none");
+//    masks.add("aviators");
+//    masks.add("bigmouth");
+//    masks.add("dalmatian");
+//    masks.add("flowers");
+//    masks.add("koala");
+//    masks.add("lion");
+//    masks.add("smallface");
+//    masks.add("teddycigar");
+//    masks.add("kanye");
+//    masks.add("tripleface");
+//    masks.add("sleepingmask");
+//    masks.add("fatify");
+//    masks.add("obama");
+//    masks.add("mudmask");
+//    masks.add("pug");
+//    masks.add("slash");
+//    masks.add("twistedface");
+//    masks.add("grumpycat");
+//
+//    effects = new ArrayList<>();
+//    effects.add("none");
+//    effects.add("fire");
+//    effects.add("rain");
+//    effects.add("heart");
+//    effects.add("blizzard");
+//
+//    filters = new ArrayList<>();
+//    filters.add("none");
+//    filters.add("filmcolorperfection");
+//    filters.add("tv80");
+//    filters.add("drawingmanga");
+//    filters.add("sepia");
+//    filters.add("bleachbypass");
+//  }
 
   private int getScreenOrientation() {
     int rotation = activity.getWindowManager().getDefaultDisplay().getRotation();
@@ -497,19 +502,29 @@ public class CameraDeepArView implements PlatformView, RtcEnginePlugin,
 
   @Override
   public void surfaceCreated(SurfaceHolder holder) {
+    System.out.println("deepar surface created");
     setupCamera();
+    setupLocalFeed();
+    renderer.setCallInProgress(true);
   }
 
   @Override
   public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
     // If we are using on screen rendering we have to set surface view where DeepAR will render
+    System.out.println("deepar surfaceChanged "+width+" "+height);
     deepAR.setRenderSurface(holder.getSurface(), width, height);
+    if (surfaceView != null) {
+      imgSurface = surfaceView;
+      localPreviewlayout.addView(surfaceView);
+    }
   }
 
   @Override
   public void surfaceDestroyed(SurfaceHolder holder) {
+    System.out.println("deepar surfaceDestroyed ");
     if (deepAR != null) {
       deepAR.setRenderSurface(null, 0, 0);
+      localPreviewlayout.removeAllViews();
     }
   }
 
@@ -524,18 +539,27 @@ public class CameraDeepArView implements PlatformView, RtcEnginePlugin,
     if (disposed) {
       return;
     }
+    surfaceView.onPause();
+
     if (cameraProviderFuture != null) {
       ProcessCameraProvider cameraProvider = null;
       try {
+
         cameraProvider = cameraProviderFuture.get();
         cameraProvider.unbindAll();
+        System.out.println("deepar dispose cameraProviderFuture");
       } catch (ExecutionException e) {
         e.printStackTrace();
       } catch (InterruptedException e) {
         e.printStackTrace();
       }
     }
+    System.out.println("deepardispose surfaceview ");
+    surfaceView = null;
+    System.out.println("deepar dispose rtc");
+//    this.mRtcEngine=null;
     disposed = true;
+    System.out.println("deepar disposed");
     methodChannel.setMethodCallHandler(null);
     deepAR.setAREventListener(null);
     deepAR.release();
@@ -595,6 +619,7 @@ public class CameraDeepArView implements PlatformView, RtcEnginePlugin,
   public void initialized() {
     deepAR.switchEffect("mask", getFilterPath("alien"));
     renderer.setCallInProgress(true);
+    System.out.println("deepar initialized");
   }
 
   @Override
@@ -757,14 +782,15 @@ public class CameraDeepArView implements PlatformView, RtcEnginePlugin,
 
   @Override
   public void onRtcEngineCreated(@Nullable RtcEngine rtcEngine) {
-//    System.out.println("deepar rtcengine created");
+    System.out.println("deepar CameraDeepArView rtcengine created");
 //    this.mRtcEngine = rtcEngine;
 //    initializeDeepAR();
   }
 
   @Override
   public void onRtcEngineDestroyed() {
-    this.mRtcEngine = null;
+    System.out.println("deepar CameraDeepArView rtcengine created");
+//    this.mRtcEngine = null;
   }
 
 

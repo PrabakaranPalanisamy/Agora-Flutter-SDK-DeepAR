@@ -6,8 +6,6 @@ import android.os.Bundle
 import io.agora.agora_rtc_engine_example.custom_capture_audio.CustomCaptureAudio
 import io.agora.agora_rtc_engine_example.custom_capture_audio.CustomCaptureAudioPlugin
 import io.agora.agora_rtc_engine_example.deepar_video.CameraDeepArPlugin
-import io.agora.agora_rtc_engine_example.deepar_video.CameraDeepArView
-import io.agora.agora_rtc_engine_example.deepar_video.CameraDeepArViewFactory
 import io.agora.rtc.base.RtcEnginePlugin
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
