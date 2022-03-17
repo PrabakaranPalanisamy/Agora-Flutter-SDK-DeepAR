@@ -99,7 +99,7 @@ class DeepARRenderer implements GLSurfaceView.Renderer {
 
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
-      System.out.println("drawing onSurfaceCreated");
+      System.out.println("deepar drawing onSurfaceCreated");
         GLES20.glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
 
         ByteBuffer bb = ByteBuffer.allocateDirect(squareCoords.length * 4);
@@ -162,7 +162,7 @@ class DeepARRenderer implements GLSurfaceView.Renderer {
             }
         });
 
-      System.out.println("drawing render surface");
+      System.out.println("deepar drawing render surface");
         deepAR.setRenderSurface(surface, textureWidth, textureHeight);
     }
 

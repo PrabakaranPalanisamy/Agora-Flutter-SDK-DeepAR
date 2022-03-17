@@ -117,8 +117,7 @@ open class CallApiMethodCallHandler(
 }
 
 /** AgoraRtcEnginePlugin */
-class AgoraRtcEnginePlugin : FlutterPlugin, MethodCallHandler, EventChannel.StreamHandler ,
-  ActivityAware{
+class AgoraRtcEnginePlugin : FlutterPlugin, MethodCallHandler, EventChannel.StreamHandler {
   private var registrar: Registrar? = null
   private var binding: FlutterPlugin.FlutterPluginBinding? = null
   private lateinit var applicationContext: Context
@@ -260,22 +259,5 @@ class AgoraRtcEnginePlugin : FlutterPlugin, MethodCallHandler, EventChannel.Stre
       return@getAssetAbsolutePath
     }
     result.error(IllegalArgumentException::class.simpleName, null, null)
-  }
-
-  override fun onAttachedToActivity(binding: ActivityPluginBinding) {
-    //registrar.activity().getApplication().registerActivityLifecycleCallbacks(plugin);
-    println("deepar onattched to activity")
-  }
-
-  override fun onDetachedFromActivityForConfigChanges() {
-    TODO("Not yet implemented")
-  }
-
-  override fun onReattachedToActivityForConfigChanges(binding: ActivityPluginBinding) {
-    TODO("Not yet implemented")
-  }
-
-  override fun onDetachedFromActivity() {
-    TODO("Not yet implemented")
   }
 }

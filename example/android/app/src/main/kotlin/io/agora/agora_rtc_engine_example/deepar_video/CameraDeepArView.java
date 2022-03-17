@@ -1,5 +1,7 @@
 package io.agora.agora_rtc_engine_example.deepar_video;
 
+import static androidx.test.internal.runner.junit4.statement.UiThreadStatement.runOnUiThread;
+
 import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
@@ -12,6 +14,7 @@ import android.opengl.GLSurfaceView;
 import android.os.Environment;
 import android.text.format.DateFormat;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.util.Size;
 import android.view.MotionEvent;
 import android.view.Surface;
@@ -47,9 +50,12 @@ import ai.deepar.ar.CameraResolutionPreset;
 import ai.deepar.ar.DeepAR;
 import ai.deepar.ar.DeepARImageFormat;
 import io.agora.agora_rtc_engine_example.R;
+import io.agora.rtc.IRtcEngineEventHandler;
 import io.agora.rtc.RtcEngine;
 import io.agora.rtc.base.RtcEnginePlugin;
 import io.agora.rtc.video.VideoEncoderConfiguration;
+import io.flutter.embedding.engine.plugins.activity.ActivityAware;
+import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
@@ -59,7 +65,7 @@ import io.flutter.plugin.platform.PlatformView;
 public class CameraDeepArView implements PlatformView, RtcEnginePlugin,
   SurfaceHolder.Callback, AREventListener,
   MethodChannel.MethodCallHandler,
-  PluginRegistry.RequestPermissionsResultListener {
+  PluginRegistry.RequestPermissionsResultListener, ActivityAware {
 
   private final Activity activity;
   private final Context context;
@@ -117,6 +123,7 @@ public class CameraDeepArView implements PlatformView, RtcEnginePlugin,
     this.activity = mActivity;
     this.context = mContext;
     this.mRtcEngine = rtcEngine;
+//    mRtcEngine.addHandler(mRtcEventHandler);
     //view = View.inflate(context,R.layout.activity_camera, null);
     view = activity.getLayoutInflater().inflate(R.layout.activity_main, null);
     methodChannel =
@@ -180,6 +187,7 @@ public class CameraDeepArView implements PlatformView, RtcEnginePlugin,
 
   private void initializeDeepAR() {
     System.out.println("deepar initialize deepar");
+
     setupVideoConfig();
     deepAR = new DeepAR(activity);
     deepAR.setLicenseKey(androidLicenceKey);
@@ -188,6 +196,7 @@ public class CameraDeepArView implements PlatformView, RtcEnginePlugin,
     renderer = new DeepARRenderer(deepAR, mRtcEngine);
     renderer.setCallInProgress(true);
 //    setupLocalFeed();
+    setupCamera();
   }
 
   private void setupVideoConfig() {
@@ -220,7 +229,7 @@ public class CameraDeepArView implements PlatformView, RtcEnginePlugin,
     surfaceView.setRenderer(renderer);
     surfaceView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
     // surfaceview is added to the local framelayout
-    imgSurface = (surfaceView);
+//    imgSurface = (surfaceView);
     localPreviewlayout.addView(surfaceView);
   }
 
@@ -503,7 +512,6 @@ public class CameraDeepArView implements PlatformView, RtcEnginePlugin,
   @Override
   public void surfaceCreated(SurfaceHolder holder) {
     System.out.println("deepar surface created");
-    setupCamera();
     setupLocalFeed();
     renderer.setCallInProgress(true);
   }
@@ -514,7 +522,8 @@ public class CameraDeepArView implements PlatformView, RtcEnginePlugin,
     System.out.println("deepar surfaceChanged "+width+" "+height);
     deepAR.setRenderSurface(holder.getSurface(), width, height);
     if (surfaceView != null) {
-      imgSurface = surfaceView;
+//      imgSurface = surfaceView;
+      localPreviewlayout.removeAllViews();
       localPreviewlayout.addView(surfaceView);
     }
   }
@@ -527,6 +536,62 @@ public class CameraDeepArView implements PlatformView, RtcEnginePlugin,
       localPreviewlayout.removeAllViews();
     }
   }
+//  private final IRtcEngineEventHandler mRtcEventHandler = new IRtcEngineEventHandler() {
+//    @Override
+//    public void onWarning(int warn) {
+//      Log.e("deepar", "warning: " + warn);
+//    }
+//
+//    @Override
+//    public void onError(int err) {
+//      Log.e("deepar", "error: " + err);
+//    }
+//
+//    @Override
+//    public void onJoinChannelSuccess(String channel, final int uid, int elapsed) {
+//      try {
+//        runOnUiThread(new Runnable() {
+//          @Override
+//          public void run() {
+//           Log.d("deepar","onJoinChannelSuccess");
+//            renderer.setCallInProgress(true);
+//          }
+//        });
+//      } catch (Throwable throwable) {
+//        throwable.printStackTrace();
+//      }
+//    }
+//
+//    @Override
+//    public void onFirstRemoteVideoDecoded(final int uid, int width, int height, int elapsed) {
+//      try {
+//        runOnUiThread(new Runnable() {
+//          @Override
+//          public void run() {
+//            System.out.println("deeparonFirstRemoteVideoDecoded");
+//  renderer.setCallInProgress(true);
+//          }
+//        });
+//      } catch (Throwable throwable) {
+//        throwable.printStackTrace();
+//      }
+//    }
+//
+//    @Override
+//    public void onUserOffline(final int uid, int reason) {
+//      try {
+//        runOnUiThread(new Runnable() {
+//          @Override
+//          public void run() {
+//           System.out.println( "deepar onUserOffline");
+//            renderer.setCallInProgress(false);
+//          }
+//        });
+//      } catch (Throwable throwable) {
+//        throwable.printStackTrace();
+//      }
+//    }
+//  };
 
 
   @Override
@@ -541,6 +606,21 @@ public class CameraDeepArView implements PlatformView, RtcEnginePlugin,
     }
     surfaceView.onPause();
 
+    dispostCameraProvider();
+    System.out.println("deepardispose surfaceview ");
+    surfaceView = null;
+    System.out.println("deepar dispose rtc");
+//    this.mRtcEngine=null;
+    disposed = true;
+    System.out.println("deepar disposed");
+    methodChannel.setMethodCallHandler(null);
+    deepAR.setAREventListener(null);
+    deepAR.release();
+    deepAR = null;
+
+  }
+
+  private void dispostCameraProvider() {
     if (cameraProviderFuture != null) {
       ProcessCameraProvider cameraProvider = null;
       try {
@@ -554,17 +634,6 @@ public class CameraDeepArView implements PlatformView, RtcEnginePlugin,
         e.printStackTrace();
       }
     }
-    System.out.println("deepardispose surfaceview ");
-    surfaceView = null;
-    System.out.println("deepar dispose rtc");
-//    this.mRtcEngine=null;
-    disposed = true;
-    System.out.println("deepar disposed");
-    methodChannel.setMethodCallHandler(null);
-    deepAR.setAREventListener(null);
-    deepAR.release();
-    deepAR = null;
-
   }
 
   @Override
@@ -619,6 +688,10 @@ public class CameraDeepArView implements PlatformView, RtcEnginePlugin,
   public void initialized() {
     deepAR.switchEffect("mask", getFilterPath("alien"));
     renderer.setCallInProgress(true);
+    if(surfaceView!=null){
+      localPreviewlayout.removeAllViews();
+      localPreviewlayout.addView(surfaceView);
+    }
     System.out.println("deepar initialized");
   }
 
@@ -794,4 +867,23 @@ public class CameraDeepArView implements PlatformView, RtcEnginePlugin,
   }
 
 
+  @Override
+  public void onAttachedToActivity(@NonNull ActivityPluginBinding binding) {
+
+  }
+
+  @Override
+  public void onDetachedFromActivityForConfigChanges() {
+
+  }
+
+  @Override
+  public void onReattachedToActivityForConfigChanges(@NonNull ActivityPluginBinding binding) {
+
+  }
+
+  @Override
+  public void onDetachedFromActivity() {
+//    dispostCameraProvider();
+  }
 }

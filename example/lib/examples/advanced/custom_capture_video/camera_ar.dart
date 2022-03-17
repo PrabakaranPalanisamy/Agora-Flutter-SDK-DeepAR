@@ -42,7 +42,7 @@ class _CameraARState extends State<CameraAR> {
     _engine = await RtcEngine.createWithContext(RtcEngineContext("79daa6d2970d4978a08c21915fbfc1d9"));
     this._addListeners();
 
-    await _engine.enableVideo();
+    // await _engine.enableVideo();
     // await _engine.startPreview();
     await _engine.setChannelProfile(ChannelProfile.LiveBroadcasting);
     await _engine.setClientRole(ClientRole.Broadcaster);
@@ -58,6 +58,7 @@ class _CameraARState extends State<CameraAR> {
       },
       joinChannelSuccess: (channel, uid, elapsed) {
         logSink.log('joinChannelSuccess ${channel} ${uid} ${elapsed}');
+
         setState(() {
           isJoined = true;
         });
