@@ -42,7 +42,7 @@ class _CameraARState extends State<CameraAR> {
     _engine = await RtcEngine.createWithContext(RtcEngineContext("79daa6d2970d4978a08c21915fbfc1d9"));
     this._addListeners();
 
-    // await _engine.enableVideo();
+    //
     // await _engine.startPreview();
     await _engine.setChannelProfile(ChannelProfile.LiveBroadcasting);
     await _engine.setClientRole(ClientRole.Broadcaster);
@@ -50,15 +50,16 @@ class _CameraARState extends State<CameraAR> {
   }
   _addListeners() {
     _engine.setEventHandler(RtcEngineEventHandler(
+
       warning: (warningCode) {
         logSink.log('warning ${warningCode}');
       },
       error: (errorCode) {
         logSink.log('error ${errorCode}');
       },
-      joinChannelSuccess: (channel, uid, elapsed) {
+      joinChannelSuccess: (channel, uid, elapsed) async {
         logSink.log('joinChannelSuccess ${channel} ${uid} ${elapsed}');
-
+        // await _engine.enableVideo();
         setState(() {
           isJoined = true;
         });
@@ -89,7 +90,7 @@ class _CameraARState extends State<CameraAR> {
     if (defaultTargetPlatform == TargetPlatform.android) {
       await [Permission.microphone, Permission.camera].request();
     }
-    await _engine.joinChannel("00679daa6d2970d4978a08c21915fbfc1d9IACeQECeARppKmELt4J+GSAF03ahI4XcEE+F+7TQnvM0pgx+f9gAAAAAEADjTvSOvQozYgEAAQC9CjNi", "test", null,0);
+    await _engine.joinChannel("00679daa6d2970d4978a08c21915fbfc1d9IABlOCXznduvtG+y1soj6OaSyaTcvgMBqfDKAiYso3bM6gx+f9gAAAAAEADjTvSOGdQ1YgEAAQAZ1DVi", "test", null,0);
   }
 
   _leaveChannel() async {
@@ -112,7 +113,7 @@ class _CameraARState extends State<CameraAR> {
         backgroundColor: Colors.black,
         body: Stack(
           children: [
-            CameraDeepAr(
+             CameraDeepAr(
                 onCameraReady: (isReady) {
                   _platformVersion = "Camera status $isReady";
                   setState(() {});

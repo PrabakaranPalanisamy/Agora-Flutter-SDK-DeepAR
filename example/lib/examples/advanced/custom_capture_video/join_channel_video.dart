@@ -8,7 +8,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-import 'custom_capture_video_api.generated.dart';
+
 
 /// MultiChannel Example
 class JoinChannelCustomVideo extends StatefulWidget {
@@ -18,7 +18,7 @@ class JoinChannelCustomVideo extends StatefulWidget {
 
 class _State extends State<JoinChannelCustomVideo> {
   late final RtcEngine _engine;
-  final CustomCaptureVideoApi _api = CustomCaptureVideoApi();
+  // final CustomCaptureVideoApi _api = CustomCaptureVideoApi();
 
   bool isJoined = false, switchCamera = true, switchRender = true;
   List<int> remoteUid = [];

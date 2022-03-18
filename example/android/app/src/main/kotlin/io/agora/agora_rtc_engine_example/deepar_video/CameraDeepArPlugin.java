@@ -5,6 +5,7 @@ import android.app.Activity;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.lifecycle.Lifecycle;
 
 import com.karumi.dexter.Dexter;
 import com.karumi.dexter.MultiplePermissionsReport;
@@ -12,6 +13,7 @@ import com.karumi.dexter.PermissionToken;
 import com.karumi.dexter.listener.PermissionRequest;
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
 
+import java.lang.ref.WeakReference;
 import java.util.List;
 
 import io.agora.rtc.RtcEngine;
@@ -22,7 +24,6 @@ import io.flutter.embedding.engine.plugins.activity.ActivityAware;
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodChannel;
-import io.flutter.plugin.common.PluginRegistry.Registrar;
 
 //import ai.deepar.ar.DeepAR;
 
@@ -32,14 +33,15 @@ import io.flutter.plugin.common.PluginRegistry.Registrar;
  */
 public class CameraDeepArPlugin implements FlutterPlugin, ActivityAware, RtcEnginePlugin {
 
-  private Activity activity;
+  private WeakReference<Activity> activity;
+  private WeakReference<Lifecycle> lifecycleWeakReference;
   private FlutterPluginBinding pluginBinding;
   private BinaryMessenger binaryMessenger;
   private FlutterEngine flutterEngine;
   private RtcEngine rtcEngine;
 
 
-  public CameraDeepArPlugin(Activity registrar) {
+  public CameraDeepArPlugin(WeakReference<Activity> registrar) {
     this.activity = registrar;
 
   }
@@ -47,13 +49,13 @@ public class CameraDeepArPlugin implements FlutterPlugin, ActivityAware, RtcEngi
   public CameraDeepArPlugin() {
   }
 
-  public  void registerWith(FlutterEngine flutterEngine, Activity activity) {
+  public void registerWith(FlutterEngine flutterEngine, WeakReference<Activity> activity, WeakReference<Lifecycle> lifecycleWeakReference) {
     if (activity == null) return;
     System.out.println("deepar registering");
-    this.binaryMessenger=flutterEngine.getDartExecutor();
-    this.activity=activity;
-    this.flutterEngine=flutterEngine;
-
+    this.binaryMessenger = flutterEngine.getDartExecutor();
+    this.activity = activity;
+    this.flutterEngine = flutterEngine;
+    this.lifecycleWeakReference = lifecycleWeakReference;
 //    final CameraDeepArPlugin plugin = new CameraDeepArPlugin(activity);
     //registrar.activity().getApplication().registerActivityLifecycleCallbacks(plugin);
 
@@ -68,9 +70,9 @@ public class CameraDeepArPlugin implements FlutterPlugin, ActivityAware, RtcEngi
 //    final CameraDeepArViewFactory factory = new CameraDeepArViewFactory(binding.getActivity(),pluginBinding.getBinaryMessenger());
     System.out.println("deepar rtcengine onAttachedToActivity plugin registerd");
 
-    if(this.rtcEngine!=null) {
-      final CameraDeepArViewFactory factory = new CameraDeepArViewFactory(this.activity, binaryMessenger, this.rtcEngine);
-      flutterEngine
+    if (this.rtcEngine != null) {
+      final CameraDeepArViewFactory factory = new CameraDeepArViewFactory(this.activity, binaryMessenger, this.rtcEngine, lifecycleWeakReference);
+      this.flutterEngine
         .getPlatformViewsController()
         .getRegistry()
         .registerViewFactory("deep_ar_camera", factory);
@@ -99,7 +101,7 @@ public class CameraDeepArPlugin implements FlutterPlugin, ActivityAware, RtcEngi
   }
 
   private void checkForPermission(final MethodChannel.Result result) {
-    Dexter.withContext(activity)
+    Dexter.withContext(activity.get())
       .withPermissions(Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE)
       .withListener(new MultiplePermissionsListener() {
         @Override
@@ -136,17 +138,21 @@ public class CameraDeepArPlugin implements FlutterPlugin, ActivityAware, RtcEngi
 
   @Override
   public void onRtcEngineCreated(@Nullable RtcEngine rtcEngine) {
-System.out.println("deepar rtcengine created plugin registerd");
-this.rtcEngine=rtcEngine;
-    final CameraDeepArViewFactory factory = new CameraDeepArViewFactory(this.activity,binaryMessenger,rtcEngine);
-    flutterEngine
+
+    this.rtcEngine = rtcEngine;
+    System.out.println("deepar rtcengine created plugin registering" + this.rtcEngine);
+    final CameraDeepArViewFactory factory = new CameraDeepArViewFactory(this.activity, binaryMessenger, this.rtcEngine, lifecycleWeakReference);
+    boolean result = this.flutterEngine
       .getPlatformViewsController()
       .getRegistry()
       .registerViewFactory("deep_ar_camera", factory);
+    if (!result)
+      CameraDeepArViewFactory.setmRtcEngine(rtcEngine);
+    System.out.println("deepar rtcengine created plugin registerd" + result);
   }
 
   @Override
   public void onRtcEngineDestroyed() {
-
+    this.rtcEngine = null;
   }
 }

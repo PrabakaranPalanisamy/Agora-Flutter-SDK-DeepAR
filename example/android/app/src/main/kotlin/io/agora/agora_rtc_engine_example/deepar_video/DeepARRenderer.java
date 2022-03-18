@@ -67,6 +67,7 @@ class DeepARRenderer implements GLSurfaceView.Renderer {
     private int texture;
     private SurfaceTexture surfaceTexture;
     private Surface surface;
+    private boolean logShown=false;
 
     private DeepAR deepAR;
     private RtcEngine rtcEngine;
@@ -212,8 +213,11 @@ class DeepARRenderer implements GLSurfaceView.Renderer {
             frame.transform = matrix;
             frame.rotation = 180;
             if(rtcEngine!=null) {
-//              System.out.println("deepar pushing frames");
               boolean success = rtcEngine.pushExternalVideoFrame(frame);
+              if(!logShown) {
+                System.out.println("deepar pushing frames " + success);
+                logShown=true;
+              }
             }
 
         }

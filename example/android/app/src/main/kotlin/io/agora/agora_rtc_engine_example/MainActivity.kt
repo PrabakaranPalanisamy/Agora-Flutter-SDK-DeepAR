@@ -18,7 +18,7 @@ class MainActivity: FlutterActivity() {
 
   private val customCaptureAudioPlugin = CustomCaptureAudioPlugin(WeakReference(this))
 //  private val customCaptureVideoPlugin = CustomCaptureVideoPlugin(WeakReference(this),lifecycle)
-  private val cameraDeepArPlugin = CameraDeepArPlugin(this)
+  private val cameraDeepArPlugin = CameraDeepArPlugin(WeakReference(this))
 private var _flutterEngine:FlutterEngine? =null;
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -36,7 +36,7 @@ private var _flutterEngine:FlutterEngine? =null;
     // the definiton on `example/lib/examples/advanced/custom_audio/custom_audio_source_api.dart`
     CustomCaptureAudio.CustomCaptureAudioApi.setup(flutterEngine.dartExecutor, customCaptureAudioPlugin)
     //registrar.activity().getApplication().registerActivityLifecycleCallbacks(plugin);
-    cameraDeepArPlugin.registerWith(flutterEngine,this)
+    cameraDeepArPlugin.registerWith(flutterEngine,WeakReference(this),WeakReference(lifecycle))
 
     println("deepar registered")
 //    CustomCaptureVideo.CustomCaptureVideoApi.setup(flutterEngine.dartExecutor, customCaptureVideoPlugin)
